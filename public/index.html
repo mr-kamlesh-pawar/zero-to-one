@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Zero to One — Digital Electronics Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Rajdhani:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --accent: #2fd3e8;
+            --accent-ink: #62e3f2;
+            --accent-soft: rgba(47, 211, 232, .12);
+            --sig: #3ee68f;
+            --on-accent: #03151a;
+            --f-display: "Rajdhani", "Arial Narrow", sans-serif;
+            --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+            --f-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+        }
+
+        html,
+        body {
+            min-height: 100dvh;
+            background: #03060b;
+            color: #d6e2ee;
+            font-family: var(--f-body);
+            overflow-x: hidden;
+        }
+
+        /* ============================================================
+   TOPBAR
+   ============================================================ */
+
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            background: rgba(3, 6, 11, .75);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, .07);
+        }
+
+        @media(max-width:600px) {
+            .topbar {
+                padding: 0 18px
+            }
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .topbar-chip {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            flex: none;
+            background: #0e151f;
+            border: 1.5px solid var(--accent);
+            position: relative;
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        .topbar-chip::before,
+        .topbar-chip::after {
+            content: "";
+            position: absolute;
+            inset: -5px 5px;
+            border-top: 2px dotted var(--accent);
+            border-bottom: 2px dotted var(--accent);
+        }
+
+        .topbar-chip::after {
+            inset: 5px -5px;
+            border: 0;
+            border-left: 2px dotted var(--accent);
+            border-right: 2px dotted var(--accent);
+        }
+
+        .topbar-name {
+            font-family: var(--f-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: .05em;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .topbar-name small {
+            display: block;
+            font-family: var(--f-mono);
+            font-size: .58rem;
+            color: rgba(255, 255, 255, .3);
+            letter-spacing: .1em;
+            margin-top: 2px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--f-mono);
+            font-size: .7rem;
+            color: rgba(255, 255, 255, .35);
+        }
+
+        .topbar-right b {
+            color: #f4c430
+        }
+
+        @media(max-width:480px) {
+            .topbar-right {
+                display: none
+            }
+        }
+
+        /* ============================================================
+   HERO
+   ============================================================ */
+
+        .hero {
+            min-height: 100dvh;
+            padding-top: 56px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Background image */
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: #03060b url('img/bg-circuit.png') center center/cover no-repeat;
+            z-index: 0;
+        }
+
+        /* Overlays — keep image visible but text legible */
+
+        .hero-bg::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(3, 6, 11, .5) 0%, rgba(3, 6, 11, .3) 25%, rgba(3, 6, 11, .3) 65%, rgba(3, 6, 11, .82) 100%), linear-gradient(105deg, rgba(3, 6, 11, .82) 0%, rgba(3, 6, 11, .45) 45%, rgba(3, 6, 11, .2) 100%);
+        }
+
+        /* Cyan glow in centre */
+
+        .hero-bg::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: radial-gradient(ellipse 65% 55% at 50% 48%, rgba(47, 211, 232, .07) 0%, transparent 70%);
+        }
+
+        /* Content box */
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 800px;
+            padding: 60px 52px 72px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        @media(max-width:860px) {
+            .hero-content {
+                padding: 48px 28px 60px;
+                align-items: center;
+                text-align: center
+            }
+        }
+
+        /* Eyebrow */
+
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .eyebrow-line {
+            width: 28px;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 2px;
+            flex: none;
+        }
+
+        .eyebrow-text {
+            font-family: var(--f-mono);
+            font-size: .68rem;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--accent-ink);
+        }
+
+        @media(max-width:860px) {
+            .eyebrow {
+                justify-content: center
+            }
+        }
+
+        /* Course title */
+
+        .course-title {
+            font-family: var(--f-display);
+            font-size: clamp(4rem, 9vw, 8rem);
+            font-weight: 700;
+            line-height: .92;
+            letter-spacing: -.02em;
+            margin: 0 0 16px;
+            display: flex;
+            align-items: baseline;
+            gap: .16em;
+        }
+
+        .t-zero {
+            color: var(--accent);
+            text-shadow: 0 0 50px rgba(47, 211, 232, .5);
+        }
+
+        .t-to {
+            font-size: .32em;
+            font-weight: 400;
+            color: rgba(255, 255, 255, .22);
+            font-family: var(--f-body);
+            letter-spacing: .04em;
+            align-self: center;
+            padding-bottom: .12em;
+        }
+
+        .t-one {
+            color: #fff;
+            text-shadow: 0 2px 40px rgba(255, 255, 255, .1);
+        }
+
+        /* Tagline */
+
+        .tagline {
+            font-family: var(--f-body);
+            font-size: clamp(.82rem, 1.4vw, .95rem);
+            font-weight: 600;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .4);
+            margin: 0 0 22px;
+        }
+
+        /* Description */
+
+        .description {
+            font-size: clamp(.92rem, 1.3vw, 1rem);
+            color: rgba(255, 255, 255, .55);
+            max-width: 48ch;
+            line-height: 1.65;
+            margin: 0 0 30px;
+        }
+
+        /* Divider */
+
+        .divider {
+            width: 100%;
+            max-width: 420px;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, .12), transparent);
+            margin-bottom: 26px;
+        }
+
+        @media(max-width:860px) {
+            .divider {
+                max-width: 100%
+            }
+        }
+
+        /* Stats */
+
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 28px
+        }
+
+        .stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 6px;
+            padding: 7px 13px;
+            font-family: var(--f-mono);
+            font-size: .72rem;
+            color: rgba(255, 255, 255, .45);
+            backdrop-filter: blur(6px);
+        }
+
+        .stat strong {
+            color: #fff;
+            font-size: .82rem;
+            font-weight: 700
+        }
+
+        /* Rating */
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .stars {
+            color: #f4c430;
+            font-size: 1rem;
+            letter-spacing: 2px
+        }
+
+        .rating-val {
+            font-family: var(--f-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .rating-sep {
+            width: 1px;
+            height: 30px;
+            background: rgba(255, 255, 255, .12)
+        }
+
+        .rating-detail {
+            font-family: var(--f-mono);
+            font-size: .7rem;
+            color: rgba(255, 255, 255, .38);
+            line-height: 1.5;
+        }
+
+        /* CTA */
+
+        .cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 44px;
+        }
+
+        .btn-primary {
+            font-family: var(--f-body);
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 14px 34px;
+            border-radius: 6px;
+            border: none;
+            background: var(--accent);
+            color: var(--on-accent);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: .02em;
+            box-shadow: 0 4px 28px rgba(47, 211, 232, .3);
+            position: relative;
+            overflow: hidden;
+            transition: transform .12s, box-shadow .2s;
+            text-decoration: none;
+        }
+
+        .btn-primary::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, .22) 50%, transparent 65%);
+            transform: translateX(-120%);
+            transition: transform .55s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 36px rgba(47, 211, 232, .5);
+        }
+
+        .btn-primary:hover::after {
+            transform: translateX(120%)
+        }
+
+        .btn-primary:active {
+            transform: translateY(0)
+        }
+
+        .arrow {
+            display: inline-block;
+            transition: transform .15s;
+            font-size: .95rem
+        }
+
+        .btn-primary:hover .arrow {
+            transform: translateX(5px)
+        }
+
+        .btn-secondary {
+            font-family: var(--f-body);
+            font-size: .92rem;
+            font-weight: 600;
+            padding: 13px 24px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, .18);
+            background: transparent;
+            color: rgba(255, 255, 255, .7);
+            cursor: pointer;
+            text-decoration: none;
+            transition: border-color .15s, background .15s, color .15s;
+        }
+
+        .btn-secondary:hover {
+            border-color: rgba(255, 255, 255, .4);
+            background: rgba(255, 255, 255, .06);
+            color: #fff;
+        }
+
+        /* Author card */
+
+        .author-card {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            gap: 16px;
+            background: rgba(6, 11, 18, .72);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, .09);
+            border-top: 1px solid rgba(255, 255, 255, .16);
+            border-radius: 12px;
+            padding: 16px 22px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .07);
+        }
+
+        .author-photo {
+            width: 66px;
+            height: 66px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex: none;
+            border: 2px solid rgba(47, 211, 232, .55);
+            box-shadow: 0 0 0 4px rgba(47, 211, 232, .1), 0 0 22px rgba(47, 211, 232, .18);
+        }
+
+        .author-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px
+        }
+
+        .author-role {
+            font-family: var(--f-mono);
+            font-size: .6rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--accent-ink);
+            margin-bottom: 3px;
+        }
+
+        .author-name {
+            font-family: var(--f-display);
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+            color: #fff;
+            line-height: 1.1;
+        }
+
+        .author-title {
+            font-size: .78rem;
+            color: rgba(255, 255, 255, .42);
+            line-height: 1.45;
+            margin-top: 2px;
+        }
+
+        .author-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px
+        }
+
+        .tag {
+            font-family: var(--f-mono);
+            font-size: .58rem;
+            letter-spacing: .07em;
+            padding: 3px 9px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            color: rgba(255, 255, 255, .45);
+            background: rgba(255, 255, 255, .04);
+        }
+
+        @media(max-width:480px) {
+            .author-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+                justify-items: center
+            }
+        }
+
+        /* ============================================================
+   FEATURE STRIP
+   ============================================================ */
+
+        .features {
+            position: relative;
+            z-index: 2;
+            background: rgba(6, 10, 16, .95);
+            border-top: 1px solid rgba(255, 255, 255, .07);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+        }
+
+        .feat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 20px;
+            font-family: var(--f-mono);
+            font-size: .74rem;
+            color: rgba(255, 255, 255, .38);
+            border-right: 1px solid rgba(255, 255, 255, .06);
+            transition: color .2s, background .2s;
+            cursor: default;
+        }
+
+        .feat:last-child {
+            border-right: 0
+        }
+
+        .feat:hover {
+            color: rgba(255, 255, 255, .75);
+            background: rgba(255, 255, 255, .03)
+        }
+
+        .feat strong {
+            color: rgba(255, 255, 255, .62);
+            font-weight: 600
+        }
+
+        .feat-icon {
+            font-size: 15px
+        }
+
+        @media(max-width:600px) {
+            .feat {
+                border-right: 0;
+                border-bottom: 1px solid rgba(255, 255, 255, .06);
+                width: 50%
+            }
+            .feat:nth-child(even) {
+                border-right: 0
+            }
+            .feat:last-child {
+                border-bottom: 0
+            }
+        }
+
+        /* ============================================================
+   FOOTER
+   ============================================================ */
+
+        footer {
+            position: relative;
+            z-index: 2;
+            background: rgba(3, 6, 11, .98);
+            border-top: 1px solid rgba(255, 255, 255, .06);
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-family: var(--f-mono);
+            font-size: .65rem;
+            color: rgba(255, 255, 255, .2);
+        }
+
+        footer a {
+            color: rgba(47, 211, 232, .6);
+            text-decoration: none
+        }
+
+        footer a:hover {
+            color: var(--accent-ink)
+        }
+
+        @media(max-width:600px) {
+            footer {
+                padding: 14px 18px;
+                justify-content: center;
+                text-align: center
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+                animation: none !important
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-brand">
+            <span class="topbar-chip" aria-hidden="true"></span>
+            <div class="topbar-name">
+                Zero to One
+                <small>Digital Electronics &middot; Gates to FPGAs</small>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <span>Instructor on</span>
+            <b style="color:rgba(255,255,255,.55);font-size:.8rem;font-family:'Rajdhani',sans-serif;letter-spacing:.04em">Udemy</b>
+            <b>&nbsp;&#9733; 4.8</b>
+            <span>&nbsp;&middot;&nbsp;60+ Ratings</span>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+
+        <div class="hero-content">
+
+            <!-- Eyebrow -->
+            <div class="eyebrow">
+                <span class="eyebrow-line"></span>
+                <span class="eyebrow-text">Interactive Lab by Dr. Sagar Joshi</span>
+            </div>
+
+            <!-- Course title -->
+            <h1 class="course-title">
+                <span class="t-zero">Zero</span>
+                <span class="t-to">to</span>
+                <span class="t-one">One</span>
+            </h1>
+
+            <!-- Tagline -->
+            <p class="tagline">Digital System Design, from Gates to FPGAs</p>
+
+            <!-- Description -->
+            <p class="description">
+                Master Boolean algebra, Karnaugh maps, FSMs, flip-flops, counters &amp; IC families &mdash; through interactive simulators and solved examples that build a rock-solid path to FPGAs and VLSI.
+            </p>
+
+            <div class="divider"></div>
+
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat"><strong>15+</strong>&nbsp;Yrs Experience</div>
+                <div class="stat"><strong>Gold</strong>&nbsp;Medalist M.E.</div>
+                <div class="stat"><strong>1</strong>&nbsp;Authored Book</div>
+                <div class="stat"><strong>Ph.D.</strong>&nbsp;Researcher</div>
+            </div>
+
+            <!-- Rating -->
+            <div class="rating">
+                <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <div class="rating-val">4.8</div>
+                <div class="rating-sep"></div>
+                <div class="rating-detail">60+ Student Ratings<br>on Udemy</div>
+            </div>
+
+            <!-- CTA -->
+            <div class="cta-row">
+                <a href="lab.html" class="btn-primary">
+        Enter Lab &nbsp;<span class="arrow">&#8594;</span>
+      </a>
+                <a href="https://www.udemy.com/course/hands-on-digital-electronics-laying-the-path-to-vlsi/" target="_blank" rel="noopener" class="btn-secondary">
+        View on Udemy &#8599;
+      </a>
+            </div>
+
+            <!-- Author -->
+            <div class="author-card">
+                <img class="author-photo" src="img/author.jpg" alt="Dr. Sagar Joshi">
+                <div class="author-info">
+                    <div class="author-role">Course Author &amp; Publisher</div>
+                    <div class="author-name">Dr. Sagar Joshi</div>
+                    <div class="author-title">Digital Circuits Expert &middot; Researcher &middot; International Publication Reviewer</div>
+                    <div class="author-tags">
+                        <span class="tag">Ph.D.</span>
+                        <span class="tag">Gold Medalist M.E.</span>
+                        <span class="tag">VLSI</span>
+                        <span class="tag">FPGA</span>
+                        <span class="tag">Digital Electronics</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FEATURE STRIP -->
+    <div class="features">
+        <div class="feat"><span class="feat-icon">&#128506;</span><strong>K-Map Solver</strong></div>
+        <div class="feat"><span class="feat-icon">&#9881;</span><strong>FSM Simulator</strong></div>
+        <div class="feat"><span class="feat-icon">&#128300;</span><strong>Gate Circuits</strong></div>
+        <div class="feat"><span class="feat-icon">&#128203;</span><strong>Quizzes</strong></div>
+        <div class="feat"><span class="feat-icon">&#128290;</span><strong>Counter Design</strong></div>
+        <div class="feat"><span class="feat-icon">&#127891;</span><strong>Exam Examples</strong></div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <span>&copy; 2026 Zero to One &mdash; <a href="lab.html">Enter Lab</a></span>
+        <span>Published by <strong style="color:rgba(255,255,255,.4)">Dr. Sagar Joshi</strong></span>
+    </footer>
+
+</body>
+
+</html>
